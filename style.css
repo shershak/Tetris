@@ -10,6 +10,22 @@ body {
     color: #d8edea;
     background: radial-gradient( circle, rgb(156, 74, 214) 0%, rgb(118, 0, 108) 89%, rgb(81, 0, 93) 100%);
 }
+
+footer {
+    margin-top: 1.2rem;
+    display: flex;
+    justify-content: center;
+}
+footer a {
+    color: white;
+    text-decoration: none;
+}
+
+footer a:hover {
+    font-size: 1.05rem;
+    color: white;
+    text-decoration: none;
+}
 h1 {
     letter-spacing: 1.2rem;
     text-transform: uppercase;
@@ -68,6 +84,7 @@ h1 {
     flex-direction: column;
     justify-content: space-between;
 }
+
 .display {
     border: 1px solid #fff;
     justify-content: space-between;
@@ -79,6 +96,7 @@ h1 {
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px) saturate(100%) contrast(45%);
 }
+
 .mini-grid {
     margin: auto;
     text-align: center;
