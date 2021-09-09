@@ -8,6 +8,7 @@
     <title>Basic Tetris</title>
 </head>
 <body>
+
     <header>
         <h1>Tetris</h1>
     </header>
@@ -250,7 +251,13 @@
                     <div></div>
                 </div>
             </div>
-            <button id="start-button">Start/Pause</button>
+            <div class="buttons">
+                <button id="start-button" class="button">START</button>
+                <button id="music-button" class="button">&#x1F50A;</button>
+            </div>
+            <audio src="src/music/tetris.mp3" loop=""></audio>
+            <audio src="src/music/fall.wav" loop=""></audio>
+            <audio src="src/music/clear.wav" loop=""></audio>
             <div class="display">
                 <h3 class="h3-center">Rules:</span></h3>
                 <p class="rules">

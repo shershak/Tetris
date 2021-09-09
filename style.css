@@ -75,7 +75,7 @@ h1 {
     align-content: center;
     width: 10rem;
     height: 10rem;
-    border-radius: 15px;
+    border-radius: 10px;
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px) saturate(100%) contrast(45%);
 }
@@ -97,4 +97,36 @@ h1 {
 
 .rules {
     margin-left: 1.2em;
+}
+
+.buttons {
+    width: 80%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+}
+
+.button {
+    height: 30px;
+    min-width: 40px;
+    align-content: center;
+    border: 1px solid #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px) saturate(100%) contrast(45%);
+    background-color: rgba(227, 227, 218, 0.118);
+    color:rgb(255, 255, 255);
+    font-size: 1rem;
+}
+
+.button:hover {
+    align-content: center;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.652);
+    backdrop-filter: blur(10px) saturate(100%) contrast(45%);
+    background-color: rgba(227, 227, 218, 0.118);
+    color:rgb(255, 255, 255);
+    font-size: 1em;
 }
