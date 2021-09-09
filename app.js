@@ -2,8 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const grid = document.querySelector('.grid')
     let squares = Array.from(document.querySelectorAll('.grid div'))
     const scoreDisplay = document.querySelector('#score')
+    const speedDisplay = document.querySelector('#speed')
     const startBtn = document.querySelector('#start-button')
     const musicBtn = document.querySelector('#music-button')
+    const speedBtn = document.querySelector('#speed-button')
     const width = 10
     let nextRandom = 0
     let timerId
@@ -20,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'clear': 2
     }
     let isMusicPlay = true
+    let speed = 1000
 
 
     // The Tetrominoes
@@ -212,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
             displaySquares[displayIndex + index].style.opacity = '0.9'
         })
     }    
-
+    
     // add functionality to the button
     startBtn.addEventListener('click', () => {
         if (scoreDisplay.innerHTML !== 'end') {
@@ -225,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 timerId = null
             } else {
                 draw()
-                timerId = setInterval(moveDown, 1000)
+                timerId = setInterval(moveDown, speed)
                 nextRandom = Math.floor(Math.random()*theTetrominoes.length)
                 displayShape()
             }
@@ -290,5 +293,19 @@ document.addEventListener('DOMContentLoaded', () => {
         soundFall.loop = false
         soundFall.play()
     }
+
+    // add speed button
+    speedBtn.addEventListener('click', () => {
+        speed /= 1.6
+        speedDisplay.innerHTML = Number(speedDisplay.innerHTML) + 1
+        if (timerId) {
+            clearInterval(timerId)
+            timerId = setInterval(moveDown, speed)
+        } else {
+            clearInterval(timerId)
+        }
+    })
+
+    // TODO: Create function for changing speed
 })
 

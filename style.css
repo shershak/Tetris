@@ -91,7 +91,7 @@ h1 {
     align-items: center;
     align-content: center;
     width: 10rem;
-    height: 10rem;
+    
     border-radius: 10px;
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px) saturate(100%) contrast(45%);
@@ -147,4 +147,8 @@ h1 {
     background-color: rgba(227, 227, 218, 0.118);
     color:rgb(255, 255, 255);
     font-size: 1em;
+}
+
+#speed-button {
+    width: 100%;
 }
