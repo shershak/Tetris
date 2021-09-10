@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         '#8338ec',
         '#3a86ff'
       ]
-    const sounds = {
+    const sounds = { 
         'fall' : 1,
         'clear': 2
     }
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             squares[currentPosition + index].style.backgroundColor = colors[random]
             squares[currentPosition + index].style.opacity = '0.9'
         })
-        }
+    }
     
     // undraw the Tetromino
     function undraw() {
@@ -102,14 +102,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    document.addEventListener('keyup', control)
+    document.addEventListener('keydown', control)
 
     // move down function
     function moveDown() {
-            undraw()
-            currentPosition += width
-            draw()
-            freeze()
+        undraw()
+        currentPosition += width
+        draw()
+        freeze()
     }
 
     // freeze functions
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         draw()
     }
     
-    // ROTATION OF TETROMINOS A THE EDGE
+    // ROTATION OF TETROMINOS AT THE EDGE
     function isAtRight() {
         return current.some(index=> (currentPosition + index + 1) % width === 0)  
     }
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // rotate the tetromino
     function rotate() {
         undraw()
-        currentRotation ++
+        currentRotation++
         if(currentRotation === current.length) { 
             currentRotation = 0
           }
@@ -241,17 +241,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const row = [i, i+1, i+2, i+3, i+4, i+5, i+6, i+7, i+8, i+9]
 
             if(row.every(index => squares[index].classList.contains('taken'))) {
-            score +=10
-            scoreDisplay.innerHTML = score
-            row.forEach(index => {
-                squares[index].classList.remove('taken')
-                squares[index].classList.remove('tetromino')
-                squares[index].style.backgroundColor = ''
-            })
-            playSound(sounds.clear)
-            const squaresRemoved = squares.splice(i, width)
-            squares = squaresRemoved.concat(squares)
-            squares.forEach(cell => grid.appendChild(cell))
+                score +=10
+                scoreDisplay.innerHTML = score
+                row.forEach(index => {
+                        squares[index].classList.remove('taken')
+                        squares[index].classList.remove('tetromino')
+                        squares[index].classList.add('scale-down-center') 
+                })
+                playSound(sounds.clear)
+                clearInterval(timerId)
+                setTimeout(splice, 190)
+                function splice() {
+                    row.forEach(index => {
+                        squares[index].classList.remove('scale-down-center')
+                        squares[index].style.backgroundColor = ''
+                    })
+                    const squaresRemoved = squares.splice(i, width)
+                    squares = squaresRemoved.concat(squares)
+                    squares.forEach(cell => grid.appendChild(cell))
+                }
+                timerId = setInterval(moveDown, speed)
             }
         }
     }
@@ -305,7 +314,5 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(timerId)
         }
     })
-
-    // TODO: Create function for changing speed
 })
 
