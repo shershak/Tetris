@@ -1,318 +1,250 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const grid = document.querySelector('.grid')
     let squares = Array.from(document.querySelectorAll('.grid div'))
+    const displaySquares = document.querySelectorAll('.mini-grid div')
+    const grid = document.querySelector('.grid')
     const scoreDisplay = document.querySelector('#score')
     const speedDisplay = document.querySelector('#speed')
-    const startBtn = document.querySelector('#start-button')
-    const musicBtn = document.querySelector('#music-button')
-    const speedBtn = document.querySelector('#speed-button')
-    const width = 10
+    const startButton = document.querySelector('#start-button')
+    const musicButton = document.querySelector('#music-button')
+    const speedButton = document.querySelector('#speed-button')
+    let mainMusic = document.getElementsByTagName("audio")[0]
+    let scoreText = document.querySelector('.score')
+    let score = 0
+    let random = getRandom()
     let nextRandom = 0
     let timerId
-    let score = 0
-    const colors = [
-        '#43aa8b',
-        '#fb5607',
-        '#ff006e',
-        '#8338ec',
-        '#3a86ff'
-      ]
-    const sounds = { 
-        'fall' : 1,
-        'clear': 2
-    }
     let isMusicPlay = true
     let speed = 1000
-
-
-    // The Tetrominoes
-    const lTetromino = [
-        [1, width+1, width*2+1, 2],
-        [width, width+1, width+2, width*2+2],
-        [1, width+1, width*2+1, width*2],
-        [width, width*2, width*2+1, width*2+2]
-    ]
-
-    const zTetromino = [
-        [0,width,width+1,width*2+1],
-        [width+1, width+2,width*2,width*2+1],
-        [0,width,width+1,width*2+1],
-        [width+1, width+2,width*2,width*2+1]
-    ]
-
-    const tTetromino = [
-        [1,width,width+1,width+2],
-        [1,width+1,width+2,width*2+1],
-        [width,width+1,width+2,width*2+1],
-        [1,width,width+1,width*2+1]
-    ]
-
-    const oTetromino = [
-        [0,1,width,width+1],
-        [0,1,width,width+1],
-        [0,1,width,width+1],
-        [0,1,width,width+1]
-    ]
-
-    const iTetromino = [
-        [1,width+1,width*2+1,width*3+1],
-        [width,width+1,width+2,width+3],
-        [1,width+1,width*2+1,width*3+1],
-        [width,width+1,width+2,width+3]
-    ]
-
-    const theTetrominoes = [lTetromino, zTetromino, tTetromino, oTetromino, iTetromino]
-
     let currentPosition = 4
     let currentRotation = 0
+    let currentFigure = getRandomFigure()
 
-    // randomly select a Tetromino and its first rotation
-    let random = Math.floor(Math.random()*theTetrominoes.length)
-    let current = theTetrominoes[random][currentRotation]
+    startButton.addEventListener('click', () => {
+        if (scoreDisplay.innerHTML !== 'end') {
+            startButton.innerHTML = timerId ? 'START' : 'PAUSE'
+            if (isMusicPlay) playMainMusic()
 
+            if (timerId) {
+                clearInterval(timerId)
+                timerId = null
+            } else {
+                drawFigure()
+                timerId = setInterval(moveDown, speed)
+                nextRandom = getRandom()
+                showNextFigure()
+            }
+        }
+    })
 
-    // draw the Tetromino
-    function draw() {
-        current.forEach(index => {
-            squares[currentPosition + index].classList.add('tetromino')
-            squares[currentPosition + index].style.backgroundColor = colors[random]
-            squares[currentPosition + index].style.opacity = '0.9'
-        })
-    }
-    
-    // undraw the Tetromino
-    function undraw() {
-        current.forEach(index => {
-            squares[currentPosition + index].classList.remove('tetromino')
-            squares[currentPosition + index].style.backgroundColor = ''
-        })
-    }
+    musicButton.addEventListener('click', (mainMusic) => {
+        musicButton.innerHTML = isMusicPlay ? getIcon(0x1F508) : getIcon(0x1F50A)
+        isMusicPlay = isMusicPlay ? false : true
+        if (timerId) playMainMusic()
+    })
 
-    // assing functions to keyCodes
-    function control(e) {
-        if(timerId) {
-            if(e.keyCode === 37) {
-                moveLeft()
-            } else if (e.keyCode === 38) {
-                rotate()
-            } else if (e.keyCode === 39) {
-                moveRight()
-            } else if (e.keyCode === 40) {
-                moveDown()
+    speedButton.addEventListener('click', () => {
+        speed /= 1.6
+        speedDisplay.innerHTML = +speedDisplay.innerHTML + 1
+        clearInterval(timerId)
+        if (timerId) timerId = setInterval(moveDown, speed)
+    })
+
+    document.addEventListener('keydown', keyControl)
+
+    function keyControl(e) {
+        if (timerId) {
+            switch (e.keyCode) {
+                case 37: 
+                    moveLeft()
+                    break
+                case 38: 
+                    rotate()
+                    break
+                case 39:
+                    moveRight()
+                    break
+                case 40:
+                    moveDown()
+                    break
             }
         }
     }
-    document.addEventListener('keydown', control)
 
-    // move down function
+    function getRandomFigure() {
+        return figures[random][currentRotation]
+    }
+
+    function drawFigure() {
+        currentFigure.forEach(index => {
+            squares[currentPosition + index].classList.add('tetromino')
+            squares[currentPosition + index].style.backgroundColor = colors[random]
+            squares[currentPosition + index].style.opacity = '0.8'
+        })
+    }
+    
+    function undrawFigure() {
+        currentFigure.forEach(index => {
+            squares[currentPosition + index].classList.remove('tetromino')
+            squares[currentPosition + index].style.backgroundColor = ''
+            squares[currentPosition + index].style.opacity = ''
+        })
+    }
+
     function moveDown() {
-        undraw()
+        undrawFigure()
         currentPosition += width
-        draw()
+        drawFigure()
         freeze()
     }
 
-    // freeze functions
     function freeze() {
-        if(current.some(index => squares[currentPosition + index + width].classList.contains('taken'))) {
-            current.forEach(index => squares[currentPosition + index].classList.add('taken'))
+        if(isSomeTaken(width)) {
+            currentFigure.forEach(index => squares[currentPosition + index].classList.add('taken'))
             playSound(sounds.fall)
-            //start new tetrimino falling
-            random = nextRandom
-            nextRandom = Math.floor(Math.random()*theTetrominoes.length)
-            current = theTetrominoes[random][currentRotation]
-            currentPosition = 4
-            draw()
-            displayShape()
             addScore()
+            createNewFigure()
             gameOver()
         }
     }
 
-    // move the tetromino left, unless is at the edge or there is a blockage
-    function moveLeft() {
-        undraw()
-        const isAtLeftEdge = current.some(index => (currentPosition + index) % width === 0)
-        if(!isAtLeftEdge) currentPosition -=1
-        if(current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
-            currentPosition += 1
-        }
-        draw()
+    function createNewFigure() {
+        random = nextRandom
+        nextRandom = getRandom()
+        currentFigure = getRandomFigure()
+        currentPosition = 4
+        drawFigure()
+        showNextFigure()
     }
 
-    // move the tetromino right, unless is at the edge or there is a blockage
+    function moveLeft() {
+        undrawFigure()
+        if (!isAtLeftEdge()) currentPosition -=1
+        if (isSomeTaken()) currentPosition += 1
+        drawFigure()
+    }
+
     function moveRight() {
-        undraw()
-        const isAtRightEdge = current.some(index => (currentPosition + index + 1) % width === 0)
-        if(!isAtRightEdge) currentPosition +=1
-        if(current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
-            currentPosition -= 1
-        }
-        draw()
+        undrawFigure()
+        if (!isAtRightEdge()) currentPosition +=1
+        if (isSomeTaken()) currentPosition -= 1
+        drawFigure()
     }
+
+    function isSomeTaken(thisWidth = 0) {
+        return currentFigure.some(index => squares[currentPosition + index + thisWidth]
+                            .classList.contains('taken'))
+    } 
     
-    // ROTATION OF TETROMINOS AT THE EDGE
-    function isAtRight() {
-        return current.some(index=> (currentPosition + index + 1) % width === 0)  
+    function isAtRightEdge() {
+        return currentFigure.some(index => (currentPosition + index + 1) % width === 0)  
     }
       
-    function isAtLeft() {
-        return current.some(index=> (currentPosition + index) % width === 0)
+    function isAtLeftEdge() {
+        return currentFigure.some(index => (currentPosition + index) % width === 0)
     }
-      
+
+    function rotate() {
+        undrawFigure()
+        currentRotation++
+        if (currentRotation === currentFigure.length) currentRotation = 0
+        currentFigure = getRandomFigure()
+        checkRotatedPosition()
+        drawFigure()
+    }
+
+    // Rotate at the edge
     function checkRotatedPosition(P){
-        P = P || currentPosition       
+        P = P || currentPosition 
+
         if ((P+1) % width < 4) {         
-            if (isAtRight()){        
+            if (isAtRightEdge()){        
             currentPosition += 1   
             checkRotatedPosition(P)
             }
         }
         else if (P % width > 5) {
-            if (isAtLeft()){
+            if (isAtLeftEdge()){
             currentPosition -= 1
             checkRotatedPosition(P)
             }
         }
     }
 
-    // rotate the tetromino
-    function rotate() {
-        undraw()
-        currentRotation++
-        if(currentRotation === current.length) { 
-            currentRotation = 0
-          }
-        current = theTetrominoes[random][currentRotation]
-        checkRotatedPosition()
-        draw()
+    function showNextFigure() {
+        undrawNextFigure()
+        drawNextFigure() 
     }
 
-    // show up-next tetromino in mini-grid display
-    const displaySquares = document.querySelectorAll('.mini-grid div')
-    const displayWidth = 4
-    const displayIndex = 0
-  
-    // the Tetrominos without rotations
-    const upNextTetrominoes = [
-      [1, displayWidth+1, displayWidth*2+1, 2], //lTetromino
-      [0, displayWidth, displayWidth+1, displayWidth*2+1], //zTetromino
-      [1, displayWidth, displayWidth+1, displayWidth+2], //tTetromino
-      [0, 1, displayWidth, displayWidth+1], //oTetromino
-      [1, displayWidth+1, displayWidth*2+1, displayWidth*3+1] //iTetromino
-    ]
-
-    // display the shape in the mini-grid display
-    function displayShape() {
-        // remove any trace of a tetromino form the entire grid
+    function drawNextFigure() {
+        nextFigures[nextRandom].forEach( index => {
+            displaySquares[displayIndex + index].classList.add('tetromino')
+            displaySquares[displayIndex + index].style.backgroundColor = colors[nextRandom]
+            displaySquares[displayIndex + index].style.opacity = '0.8'
+        })
+    }
+    
+    function undrawNextFigure() {
         displaySquares.forEach(square => {
             square.classList.remove('tetromino')
             square.style.backgroundColor = ''
+            square.style.opacity = ''
         })
-        upNextTetrominoes[nextRandom].forEach( index => {
-            displaySquares[displayIndex + index].classList.add('tetromino')
-            displaySquares[displayIndex + index].style.backgroundColor = colors[nextRandom]
-            displaySquares[displayIndex + index].style.opacity = '0.9'
-        })
-    }    
-    
-    // add functionality to the button
-    startBtn.addEventListener('click', () => {
-        if (scoreDisplay.innerHTML !== 'end') {
-            startBtn.innerHTML = timerId ? 'START' : 'PAUSE'
-            if (isMusicPlay) {
-                playMusic()
-            }
-            if (timerId) {
-                clearInterval(timerId)
-                timerId = null
-            } else {
-                draw()
-                timerId = setInterval(moveDown, speed)
-                nextRandom = Math.floor(Math.random()*theTetrominoes.length)
-                displayShape()
-            }
-        }
-    })
+    }
 
-    // add score
+    function isRowTaken(row) {
+        return row.every(index => squares[index].classList.contains('taken'))
+    }
+
     function addScore() {
         for (let i = 0; i < 199; i +=width) {
             const row = [i, i+1, i+2, i+3, i+4, i+5, i+6, i+7, i+8, i+9]
 
-            if(row.every(index => squares[index].classList.contains('taken'))) {
+            if(isRowTaken(row)) {
                 score +=10
                 scoreDisplay.innerHTML = score
-                row.forEach(index => {
-                        squares[index].classList.remove('taken')
-                        squares[index].classList.remove('tetromino')
-                        squares[index].classList.add('scale-down-center') 
-                })
                 playSound(sounds.clear)
-                clearInterval(timerId)
-                setTimeout(splice, 190)
-                function splice() {
-                    row.forEach(index => {
-                        squares[index].classList.remove('scale-down-center')
-                        squares[index].style.backgroundColor = ''
-                    })
-                    const squaresRemoved = squares.splice(i, width)
-                    squares = squaresRemoved.concat(squares)
-                    squares.forEach(cell => grid.appendChild(cell))
-                }
-                timerId = setInterval(moveDown, speed)
+                deleteRow(row, i)
+                showAnimations()
             }
         }
     }
 
-    // game over
+    function showAnimations() {
+        grid.classList.add('color-blink-white')
+        setTimeout(() => {
+            grid.classList.remove('color-blink-white')
+        }, 300)
+    }
+
+    function deleteRow(row, i) {
+        row.forEach(index => {
+            squares[index].classList.remove('taken')
+            squares[index].classList.remove('tetromino')
+            squares[index].style.backgroundColor = ''
+        })
+        const squaresRemoved = squares.splice(i, width)
+        squares = squaresRemoved.concat(squares)
+        squares.forEach(cell => grid.appendChild(cell))
+    }
+
     function gameOver() {
-        if(current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
+        if (isSomeTaken()) {
             scoreDisplay.innerHTML = 'end'
-            if(isMusicPlay) {
-                playMusic()
-            }
+            if (isMusicPlay) playMainMusic()
+            playSound(sounds.gameover)
             isMusicPlay = false
             clearInterval(timerId)
             timerId = null
         }  
     }
 
-    // Add main music
-    let mainMusic = document.getElementsByTagName("audio")[0]
-    function playMusic() {
-        if(mainMusic.paused) {
-            mainMusic.play()
-        } else {
-            mainMusic.pause()
-        }  
-    }
-
-    // Listener to music button
-    musicBtn.addEventListener('click', (mainMusic) => {
-        musicBtn.innerHTML = isMusicPlay ? String.fromCodePoint(0x1F508) : String.fromCodePoint(0x1F50A)
-        isMusicPlay = isMusicPlay ? false : true
-        if(timerId) {
-            playMusic()
-        }
-    })
+    function playMainMusic() {
+        mainMusic.paused ? mainMusic.play() : mainMusic.pause()
+    }  
 
     function playSound(sound) {
-        let soundFall = document.getElementsByTagName("audio")[sound]
-        soundFall.loop = false
-        soundFall.play()
+        let melody = document.getElementsByTagName("audio")[sound]
+        melody.loop = false
+        melody.play()
     }
-
-    // add speed button
-    speedBtn.addEventListener('click', () => {
-        speed /= 1.6
-        speedDisplay.innerHTML = Number(speedDisplay.innerHTML) + 1
-        if (timerId) {
-            clearInterval(timerId)
-            timerId = setInterval(moveDown, speed)
-        } else {
-            clearInterval(timerId)
-        }
-    })
 })
-

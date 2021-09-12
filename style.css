@@ -153,15 +153,16 @@ h1 {
     width: 100%;
 }
 
-.scale-down-center {
-	animation: scale-down-center 0.2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+.color-blink-white {
+    animation-name: blink-white;
+    animation-duration: 0.3s;
 }
-@keyframes scale-down-center {
-    0% {
-        transform: scale(1);
-    }
-    100% {
-        transform: scale(0.1);
-    }
+
+@keyframes blink-white {
+    0%   {border: 1px solid rgba(255, 255, 255, 0.300);}
+    20%  {border: 1px solid #fff;}
+    40%  {border: 1px solid rgba(255, 255, 255, 0.300);}
+    60%  {border: 1px solid #fff;}
+    80%  {border: 1px solid rgba(255, 255, 255, 0.300);}
+    100% {border: 1px solid #fff;}
 }
-  
