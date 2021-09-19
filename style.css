@@ -93,7 +93,6 @@ h1 {
     align-items: center;
     align-content: center;
     width: 10rem;
-    
     border-radius: 10px;
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px) saturate(100%) contrast(45%);
@@ -141,10 +140,10 @@ h1 {
 .button:hover {
     align-content: center;
     border-radius: 8px;
-    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.652);
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.847);
     backdrop-filter: blur(10px) saturate(100%) contrast(45%);
     background-color: rgba(227, 227, 218, 0.118);
-    color:rgb(255, 255, 255);
+    color:rgb(255, 223, 247);
     font-size: 1em;
 }
 
@@ -160,4 +159,33 @@ h1 {
     60%  {border: 1px solid #fff;}
     80%  {border: 1px solid rgba(255, 255, 255, 0.300);}
     100% {border: 1px solid #fff;}
+}
+
+.game-over {
+    background-color: rgba(51, 4, 38, 0.875);
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
+    display: none;
+    position: fixed;
+    z-index: 5;
+    top: 150px;
+    height: 200px;
+    width: 100%;
+    text-align: center;
+
+}
+
+.game-over h1 {
+    color: rgba(246, 246, 246, 0.8);
+}
+
+.game-over p {
+    margin: 0px;
+}
+
+.game-over div {
+    margin-bottom: 8px;
+}
+
+.your-score {
+    font-size: 2.5rem;
 }

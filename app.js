@@ -3,13 +3,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const displaySquares = document.querySelectorAll('.mini-grid div')
     const grid = document.querySelector('.grid')
     const scoreDisplay = document.querySelector('#score')
+    const finalScore = document.querySelector('#final-score')
     const speedDisplay = document.querySelector('#speed')
     const startButton = document.querySelector('#start-button')
     const musicButton = document.querySelector('#music-button')
+    const tryAgainButton = document.querySelector('#try-again-button')
     const fasterSpeedButton = document.querySelector('#speed-button-faster')
     const slowerSpeedButton = document.querySelector('#speed-button-slower')
+    const gameOverBlock = document.querySelector('.game-over')
     let mainMusic = document.getElementsByTagName("audio")[0]
-    let scoreText = document.querySelector('.score')
     let score = 0
     let stepScore
     let random = getRandom()
@@ -20,9 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPosition = 4
     let currentRotation = 0
     let currentFigure = getRandomFigure()
+    let isGameOver = false
 
-    startButton.addEventListener('click', () => {
-        if (scoreDisplay.innerHTML !== 'end') {
+    startButton.addEventListener('click', startGame)
+
+    function startGame() {
+        if (!isGameOver) {
             startButton.innerHTML = timerId ? 'START' : 'PAUSE'
             if (isMusicPlay) playMainMusic()
 
@@ -36,7 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 showNextFigure()
             }
         }
-    })
+    }
+
+    tryAgainButton.addEventListener('click', startNewGame)
 
     musicButton.addEventListener('click', (mainMusic) => {
         musicButton.innerHTML = isMusicPlay ? getIcon(0x1F508) : getIcon(0x1F50A)
@@ -244,12 +251,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function gameOver() {
         if (isSomeTaken()) {
-            scoreDisplay.innerHTML = 'end'
+            isGameOver = true
             if (isMusicPlay) playMainMusic()
             playSound(sounds.gameover)
             isMusicPlay = false
             clearInterval(timerId)
             timerId = null
+            showEndTitle()
         }  
     }
 
@@ -261,5 +269,31 @@ document.addEventListener('DOMContentLoaded', () => {
         let melody = document.getElementsByTagName("audio")[sound]
         melody.loop = false
         melody.play()
+    }
+
+    function showEndTitle() {
+        finalScore.innerHTML = score
+        gameOverBlock.style.display = 'block' 
+    }
+
+    function startNewGame() {
+        gameOverBlock.style.display = 'none'
+        score = 0
+        isGameOver = false
+        speed = 1000
+        stepScore = 1
+        speedDisplay.innerHTML = 1
+        clearGameArea()
+        startGame();
+    }
+
+    function clearGameArea() {
+        squares.forEach((v, i) => {
+            if (i < 200) {
+                v.classList.remove('tetromino')
+                v.classList.remove('taken')
+                v.style.backgroundColor = ''
+            }
+        })
     }
 })
