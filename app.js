@@ -279,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function startNewGame() {
         gameOverBlock.style.display = 'none'
         score = 0
+        scoreDisplay.innerHTML = score
         isGameOver = false
         speed = 1000
         stepScore = 1
