@@ -6,10 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const speedDisplay = document.querySelector('#speed')
     const startButton = document.querySelector('#start-button')
     const musicButton = document.querySelector('#music-button')
-    const speedButton = document.querySelector('#speed-button')
+    const fasterSpeedButton = document.querySelector('#speed-button-faster')
+    const slowerSpeedButton = document.querySelector('#speed-button-slower')
     let mainMusic = document.getElementsByTagName("audio")[0]
     let scoreText = document.querySelector('.score')
     let score = 0
+    let stepScore
     let random = getRandom()
     let nextRandom = 0
     let timerId
@@ -42,12 +44,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (timerId) playMainMusic()
     })
 
-    speedButton.addEventListener('click', () => {
+    fasterSpeedButton.addEventListener('click', () => {
+        stepScore = 1
         speed /= 1.6
-        speedDisplay.innerHTML = +speedDisplay.innerHTML + 1
+        changeSpeed()
+    })
+
+    slowerSpeedButton.addEventListener('click', () => {
+        if (+speedDisplay.innerHTML > 1) {
+            stepScore = -1
+            speed *= 1.6
+            changeSpeed()
+        }
+    })
+
+    function changeSpeed() {
+        speedDisplay.innerHTML = +speedDisplay.innerHTML + stepScore
         clearInterval(timerId)
         if (timerId) timerId = setInterval(moveDown, speed)
-    })
+    }
 
     document.addEventListener('keydown', keyControl)
 
